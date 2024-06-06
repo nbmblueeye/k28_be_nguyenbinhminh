@@ -56,20 +56,15 @@ const updateMovie = async ( req, res ) => {
         return false;
     }
 
-    // {
-    //     "_id": "66547b417cc6dd9880ea4c59",
-    //     "title": "Harry Potter and the Deathly Hallows: Part 2",
-    //     "year": "2011",
-    //     "poster": "https://m.media-amazon.com/images/M/MV5BMGVmMWNiMDktYjQ0Mi00MWIxLTk0N2UtN2ZlYTdkN2IzNDNlXkEyXkFqcGdeQXVyODE5NzE3OTE@._V1_SX300.jpg"
-    // },
-
     try {
         const { title, year, poster } = req.body
-        checkMovieInDb.title = title
-        checkMovieInDb.year = year
-        checkMovieInDb.poster = poster
+
+        checkMovieInDb.title = title || checkMovieInDb.title
+        checkMovieInDb.year = year || checkMovieInDb.year
+        checkMovieInDb.poster = poster || checkMovieInDb.year
+
         await checkMovieInDb.save()
-        handleResponseSuccess(res, 200, "Get movie successfully", { movie: checkMovieInDb })
+        handleResponseSuccess(res, 200, "Movie is updated", { movie: checkMovieInDb })
 
     } catch (error) {
         console.log({error});
@@ -90,8 +85,8 @@ const deleteMovie = async( req, res ) => {
     }
 
     try {
-        const deletedMovie = await Movie.findByIdAndDelete(id)  
-        handleResponseSuccess(res, 203, "Movie deleted successfully", { })  
+        await Movie.findByIdAndDelete(id)  
+        handleResponseSuccess(res, 203, "Movie deleted successfully", {})  
     } catch (error) {
         console.log({error});
         handleResponseError(res, 500, "Internal server error")

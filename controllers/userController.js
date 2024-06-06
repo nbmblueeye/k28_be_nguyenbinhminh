@@ -1,6 +1,5 @@
 import User from "../models/UserModel.js"
 import bcrypt from 'bcrypt'
-import dotenv from 'dotenv'
 import jwt from "jsonwebtoken"
 
 import { handleResponseError, handleResponseSuccess } from "../utils/response.js"
@@ -12,7 +11,7 @@ const register = async( req, res ) => {
     const { email, password } = req.body
     console.log({email, password})
     if(!email || !password) {
-        handleResponseError(res, 400, "Invalid email or password")
+        handleResponseError(res, 400, "Email and Password are required")
         return false;
     }
 
@@ -25,37 +24,35 @@ const register = async( req, res ) => {
     const saltRound = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, saltRound)
     try {
-        const data = User.create({email, password: hashedPassword})
-        console.log(data);
+        const data = await User.create({email, password: hashedPassword})
         handleResponseSuccess(res, 201, "Register successfully", { email: data.email, role: data.role})
     } catch (error) {
         console.log(error)
-        throw new Error("")
+        throw new Error("Database connection error")
     }
 }
 
 const login = async( req, res ) => {
     const { email, password } = req.body
-    
     if(!email || !password) {
-        handleResponseError(res, 400, "Invalid email or password")
+        handleResponseError(res, 400, "Email and Password are required")
         return false;
     }
 
     const existedEmailUser = await User.findOne({email})
     if(!existedEmailUser) {
-        handleResponseError(res, 400, "Email is incorrect")
+        handleResponseError(res, 400, "User is not found")
         return false;
     }
 
-    const checkPasswordUser = await bcrypt.compare(password,existedEmailUser.password)
+    const checkPasswordUser = await bcrypt.compare(password, existedEmailUser.password)
 
     if(!checkPasswordUser) {
         handleResponseError(res, 400, "Password is incorrect")
         return false;
     }
 
-    const accessToken = generateAccessToken(checkPasswordUser)
+    const accessToken = generateAccessToken({email: existedEmailUser.email, role: existedEmailUser.role})
     handleResponseSuccess(res, 200, "Login successfully", { email: existedEmailUser.email, role: existedEmailUser.role, accessToken })
 
 }
