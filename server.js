@@ -18,6 +18,11 @@ connectToDatabase()
 
 app.use('/api/v1/movies', movieRouter);
 app.use('/api/v1/auth', userRouter);
+
+app.get("/", (req, res) => {
+    res.send('API is running....')
+})
+
 app.listen(port, (req, res) => {
     console.log("Server listening on port " + port)
 })

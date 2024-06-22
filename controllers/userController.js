@@ -7,6 +7,7 @@ import { handleResponseError, handleResponseSuccess } from "../utils/response.js
 const generateAccessToken = (user) => {
     return jwt.sign({user}, process.env.ACCESS_TOKEN_SECRET_KEY, { expiresIn: "1d"})
 }
+
 const register = async( req, res ) => {
     const { email, password } = req.body
     console.log({email, password})
@@ -14,7 +15,6 @@ const register = async( req, res ) => {
         handleResponseError(res, 400, "Email and Password are required")
         return false;
     }
-
     const existedEmail = await User.findOne({email})
     if(existedEmail) {
         handleResponseError(res, 400, "Email is already existed")
