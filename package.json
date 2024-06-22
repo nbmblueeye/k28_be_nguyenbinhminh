@@ -2,7 +2,7 @@
   "name": "final_be_k28",
   "type": "module",
   "version": "1.0.0",
-  "description": "",
+  "description": "final_be_k28",
   "main": "server.js",
   "scripts": {
     "build": "npm install",
